@@ -1,0 +1,35 @@
+private String getZipCode(Double latitude, Double longitude)
+{
+    String zipcode = null;
+    try
+    {
+        LatLng latLng = new LatLng();
+        latLng.setLat(BigDecimal.valueOf(latitude));
+        latLng.setLng(BigDecimal.valueOf(longitude));
+        final Geocoder geocoder = new Geocoder();
+        GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().setLocation(latLng).getGeocoderRequest();
+        GeocodeResponse geocoderResponse = geocoder.geocode(geocoderRequest);
+        List<GeocoderResult> results = geocoderResponse.getResults();
+        logger.debug("results :  "+results); //This will print geographical information
+        List<GeocoderAddressComponent> geList= results.get(0).getAddressComponents();
+        if(geList.get(geList.size()-1).getTypes().get(0).trim().equalsIgnoreCase("postal&#95;code"))
+        {
+            zipcode = geList.get(geList.size()-1).getLongName();
+        }
+        else if(geList.get(0).getTypes().get(0).trim().equalsIgnoreCase("postal&#95;code"))
+        {
+            zipcode = geList.get(0).getLongName();
+        }
+        logger.debug("zipcode :  " + zipcode);
+    }catch (Exception e) {
+        logger.debug(e.toString());
+        logger.debug(e.getLocalizedMessage());
+    }
+    return zipcode;
+}
+	<!-- https://mvnrepository.com/artifact/com.google.code.geocoder-java/geocoder-java -->
+		<dependency>
+			<groupId>com.google.code.geocoder-java</groupId>
+			<artifactId>geocoder-java</artifactId>
+			<version>0.15</version>
+		</dependency>
